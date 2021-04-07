@@ -1,5 +1,6 @@
 package com.readdle.codegen;
 
+import com.readdle.codegen.anotation.SwiftCallbackFunc;
 import com.readdle.codegen.anotation.SwiftGetter;
 import com.readdle.codegen.anotation.SwiftReference;
 import com.readdle.codegen.anotation.SwiftSetter;
@@ -32,6 +33,7 @@ class SwiftReferenceDescriptor {
     private String[] importPackages;
 
     List<JavaSwiftProcessor.WritableElement> functions = new LinkedList<>();
+    List<SwiftCallbackFuncDescriptor> callbackFunctions = new LinkedList<>();
 
     SwiftReferenceDescriptor(TypeElement classElement, Filer filer, JavaSwiftProcessor processor) throws IllegalArgumentException {
         this.importPackages = processor.moduleDescriptor.importPackages;
@@ -126,6 +128,11 @@ class SwiftReferenceDescriptor {
                     } else {
                         functions.add(new SwiftFuncDescriptor(executableElement, processor));
                     }
+                }else{
+                    SwiftCallbackFunc callableFunc = executableElement.getAnnotation(SwiftCallbackFunc.class);
+                    if (callableFunc != null) {
+                        callbackFunctions.add(new SwiftCallbackFuncDescriptor(executableElement, processor));
+                    }
                 }
             }
         }
@@ -175,6 +182,24 @@ class SwiftReferenceDescriptor {
         swiftWriter.emitStatement("func retain() {");
         swiftWriter.emitStatement("_ = Unmanaged.passUnretained(self).retain()");
         swiftWriter.emitStatement("}");
+
+        if (!callbackFunctions.isEmpty()){
+            swiftWriter.emitEmptyLine();
+            swiftWriter.emitStatement("public var jniObject: jobject{");
+            swiftWriter.emitStatement("get{");
+            swiftWriter.emitStatement("if self.javaObject == nil{");
+            swiftWriter.emitStatement("self.javaObject = try! javaObject()");
+            swiftWriter.emitStatement("}");
+            swiftWriter.emitStatement("return self.javaObject!");
+            swiftWriter.emitStatement("}");
+            swiftWriter.emitStatement("}");
+            swiftWriter.emitEmptyLine();
+        }
+
+        for (SwiftCallbackFuncDescriptor function : callbackFunctions) {
+            function.generateCode(swiftWriter, javaFullName, simpleTypeName);
+        }
+        swiftWriter.emitEmptyLine();
 
         swiftWriter.endExtension();
 
