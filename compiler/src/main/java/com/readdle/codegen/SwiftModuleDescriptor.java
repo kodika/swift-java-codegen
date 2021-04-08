@@ -7,5 +7,5 @@ class SwiftModuleDescriptor {
     String moduleName;
     String[] importPackages;
     HashMap<String, String> customTypeMappings;
-
+    HashMap<String, String> packageFolderMappings;
 }

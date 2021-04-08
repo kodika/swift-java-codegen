@@ -28,6 +28,9 @@ android {
                 arguments = ["com.readdle.codegen.package": """{
                    "moduleName": "SampleProject",
                    "importPackages": ["SampleAppCore"],
+                   "packageFolderMappings":{
+                            "io.kodika.android.TestPackage": "TestPackageKodika"
+                   },
                    "customTypeMappings": {
                            "com.readdle.swiftjava.sample.CustomSampleValue": "SampleValue"
                    }

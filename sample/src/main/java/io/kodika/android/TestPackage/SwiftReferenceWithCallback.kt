@@ -1,4 +1,4 @@
-package com.readdle.swiftjava.sample
+package io.kodika.android.TestPackage
 
 import com.readdle.codegen.anotation.SwiftReference
 import com.readdle.codegen.anotation.SwiftCallbackFunc

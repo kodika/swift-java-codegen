@@ -19,6 +19,7 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.MirroredTypeException;
+import javax.tools.FileObject;
 import javax.tools.StandardLocation;
 
 import static com.readdle.codegen.JavaSwiftProcessor.FOLDER;
@@ -49,17 +50,25 @@ class SwiftReferenceDescriptor {
             javaFullName = classElement.getQualifiedName().toString().replace(".", "/");
         }
 
-        try {
-            swiftFilePath = filer.createResource(StandardLocation.SOURCE_OUTPUT, FOLDER, simpleTypeName + SUFFIX, classElement).toUri().getPath();
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new IllegalArgumentException("Can't create swift file");
-        }
+
 
         Element enclosingElement = classElement.getEnclosingElement();
         while (enclosingElement != null && enclosingElement.getKind() == ElementKind.CLASS) {
             javaFullName = JavaSwiftProcessor.replaceLast(javaFullName, '/', '$');
             enclosingElement = enclosingElement.getEnclosingElement();
+        }
+
+        try {
+            String packageFolder = processor.getPackageFolderForElement(enclosingElement);
+            File folder = new File(filer.getResource(StandardLocation.SOURCE_OUTPUT,  FOLDER, packageFolder + simpleTypeName + SUFFIX).toUri().getPath()).getParentFile();
+            if (!folder.exists()){
+                folder.mkdir();
+            }
+
+            swiftFilePath = filer.createResource(StandardLocation.SOURCE_OUTPUT, FOLDER, packageFolder + simpleTypeName + SUFFIX, classElement).toUri().getPath();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException("Can't create swift file" + e.getLocalizedMessage());
         }
 
         // Check if it's an abstract class

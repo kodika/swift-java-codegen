@@ -27,6 +27,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Name;
+import javax.lang.model.element.PackageElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -328,6 +329,28 @@ public class JavaSwiftProcessor extends AbstractProcessor {
         swiftWriter.emitStatement("}");
 
         swiftWriter.close();
+    }
+
+    String getPackageFolderForElement(Element classElement){
+        if (moduleDescriptor.packageFolderMappings == null){
+            return "";
+        }
+
+        Element currentPackage = classElement;
+        while (currentPackage.getKind() != ElementKind.PACKAGE) {
+            currentPackage = currentPackage.getEnclosingElement();
+        }
+        PackageElement packageElement = (PackageElement) currentPackage;
+
+        String packageName = moduleDescriptor.packageFolderMappings.get(packageElement.toString());
+
+        this.note("Package: " + packageElement.toString() + " - FolderName: " + packageName);
+
+        if (packageName == null){
+            return "";
+        }else {
+            return packageName + "/";
+        }
     }
 
     void note(String msg) {
