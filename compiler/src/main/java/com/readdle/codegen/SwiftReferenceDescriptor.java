@@ -32,6 +32,7 @@ class SwiftReferenceDescriptor {
     private String javaFullName;
     private String simpleTypeName;
     private String[] importPackages;
+    private Boolean isAndroidPackage;
 
     List<JavaSwiftProcessor.WritableElement> functions = new LinkedList<>();
     List<SwiftCallbackFuncDescriptor> callbackFunctions = new LinkedList<>();
@@ -50,8 +51,10 @@ class SwiftReferenceDescriptor {
             javaFullName = classElement.getQualifiedName().toString().replace(".", "/");
         }
 
+        isAndroidPackage = false;
         if (javaFullName.startsWith("androidpackage/")){
             javaFullName = javaFullName.replace("androidpackage/","");
+            isAndroidPackage = true;
         }
 
         Element enclosingElement = classElement.getEnclosingElement();
@@ -165,22 +168,24 @@ class SwiftReferenceDescriptor {
         swiftWriter.emitEmptyLine();
         swiftWriter.beginExtension(simpleTypeName);
 
-        swiftWriter.emitEmptyLine();
-        swiftWriter.emitStatement("// Get swift object from pointer");
-        swiftWriter.emitStatement(String.format("static func from(javaObject: jobject) throws -> %s {", simpleTypeName));
-        swiftWriter.emitStatement("let longPointer = JNI.api.GetLongField(JNI.env, javaObject, javaSwiftPointerFiled)");
-        swiftWriter.emitStatement("guard longPointer != 0, let pointer = UnsafeRawPointer(bitPattern: Int(longPointer)) else {\nthrow NSError(domain: \"java.lang.NullPointerException\", code: 1)\n}");
-        swiftWriter.emitStatement(String.format("return Unmanaged<%s>.fromOpaque(pointer).takeUnretainedValue()", simpleTypeName));
-        swiftWriter.emitStatement("}");
+        if (!isAndroidPackage) {
+            swiftWriter.emitEmptyLine();
+            swiftWriter.emitStatement("// Get swift object from pointer");
+            swiftWriter.emitStatement(String.format("static func from(javaObject: jobject) throws -> %s {", simpleTypeName));
+            swiftWriter.emitStatement("let longPointer = JNI.api.GetLongField(JNI.env, javaObject, javaSwiftPointerFiled)");
+            swiftWriter.emitStatement("guard longPointer != 0, let pointer = UnsafeRawPointer(bitPattern: Int(longPointer)) else {\nthrow NSError(domain: \"java.lang.NullPointerException\", code: 1)\n}");
+            swiftWriter.emitStatement(String.format("return Unmanaged<%s>.fromOpaque(pointer).takeUnretainedValue()", simpleTypeName));
+            swiftWriter.emitStatement("}");
 
-        swiftWriter.emitEmptyLine();
-        swiftWriter.emitStatement("// Create java object with native pointer");
-        swiftWriter.emitStatement("func javaObject() throws -> jobject {");
-        swiftWriter.emitStatement("let nativePointer = jlong(Int(bitPattern: Unmanaged.passRetained(self).toOpaque()))");
-        swiftWriter.emitStatement("guard let result = JNI.NewObject(javaClass, methodID: javaConstructor) else {\nthrow NSError(domain: \"CantCreateObject\", code: 1)\n}");
-        swiftWriter.emitStatement("JNI.api.SetLongField(JNI.env, result, javaSwiftPointerFiled, nativePointer)");
-        swiftWriter.emitStatement("return result");
-        swiftWriter.emitStatement("}");
+            swiftWriter.emitEmptyLine();
+            swiftWriter.emitStatement("// Create java object with native pointer");
+            swiftWriter.emitStatement("func javaObject() throws -> jobject {");
+            swiftWriter.emitStatement("let nativePointer = jlong(Int(bitPattern: Unmanaged.passRetained(self).toOpaque()))");
+            swiftWriter.emitStatement("guard let result = JNI.NewObject(javaClass, methodID: javaConstructor) else {\nthrow NSError(domain: \"CantCreateObject\", code: 1)\n}");
+            swiftWriter.emitStatement("JNI.api.SetLongField(JNI.env, result, javaSwiftPointerFiled, nativePointer)");
+            swiftWriter.emitStatement("return result");
+            swiftWriter.emitStatement("}");
+        }
 
         swiftWriter.emitEmptyLine();
         swiftWriter.emitStatement("// Unbalance release");
