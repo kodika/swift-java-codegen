@@ -50,7 +50,9 @@ class SwiftReferenceDescriptor {
             javaFullName = classElement.getQualifiedName().toString().replace(".", "/");
         }
 
-
+        if (javaFullName.startsWith("androidpackage/")){
+            javaFullName = javaFullName.replace("androidpackage/","");
+        }
 
         Element enclosingElement = classElement.getEnclosingElement();
         while (enclosingElement != null && enclosingElement.getKind() == ElementKind.CLASS) {
