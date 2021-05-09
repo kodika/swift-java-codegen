@@ -185,31 +185,32 @@ class SwiftReferenceDescriptor {
             swiftWriter.emitStatement("JNI.api.SetLongField(JNI.env, result, javaSwiftPointerFiled, nativePointer)");
             swiftWriter.emitStatement("return result");
             swiftWriter.emitStatement("}");
-        }
 
-        swiftWriter.emitEmptyLine();
-        swiftWriter.emitStatement("// Unbalance release");
-        swiftWriter.emitStatement("func release() {");
-        swiftWriter.emitStatement("Unmanaged.passUnretained(self).release()");
-        swiftWriter.emitStatement("}");
 
-        swiftWriter.emitEmptyLine();
-        swiftWriter.emitStatement("// Unbalanced retain");
-        swiftWriter.emitStatement("func retain() {");
-        swiftWriter.emitStatement("_ = Unmanaged.passUnretained(self).retain()");
-        swiftWriter.emitStatement("}");
-
-        if (!callbackFunctions.isEmpty()){
             swiftWriter.emitEmptyLine();
-            swiftWriter.emitStatement("public var jniObject: jobject{");
-            swiftWriter.emitStatement("get{");
-            swiftWriter.emitStatement("if self.javaObject == nil{");
-            swiftWriter.emitStatement("self.javaObject = try! javaObject()");
+            swiftWriter.emitStatement("// Unbalance release");
+            swiftWriter.emitStatement("func release() {");
+            swiftWriter.emitStatement("Unmanaged.passUnretained(self).release()");
             swiftWriter.emitStatement("}");
-            swiftWriter.emitStatement("return self.javaObject!");
-            swiftWriter.emitStatement("}");
-            swiftWriter.emitStatement("}");
+
             swiftWriter.emitEmptyLine();
+            swiftWriter.emitStatement("// Unbalanced retain");
+            swiftWriter.emitStatement("func retain() {");
+            swiftWriter.emitStatement("_ = Unmanaged.passUnretained(self).retain()");
+            swiftWriter.emitStatement("}");
+
+            if (!callbackFunctions.isEmpty()){
+                swiftWriter.emitEmptyLine();
+                swiftWriter.emitStatement("public var jniObject: jobject{");
+                swiftWriter.emitStatement("get{");
+                swiftWriter.emitStatement("if self.javaObject == nil{");
+                swiftWriter.emitStatement("self.javaObject = try! javaObject()");
+                swiftWriter.emitStatement("}");
+                swiftWriter.emitStatement("return self.javaObject!");
+                swiftWriter.emitStatement("}");
+                swiftWriter.emitStatement("}");
+                swiftWriter.emitEmptyLine();
+            }
         }
 
         for (SwiftCallbackFuncDescriptor function : callbackFunctions) {
