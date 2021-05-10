@@ -10,6 +10,14 @@ class SwiftReferenceWithCallback private constructor() {
     // Swift JNI release method
     external fun release()
 
+    @SwiftReference
+    class SwiftReferenceEnclosed private constructor() {
+        internal val nativePointer: Long = 0L
+
+        // Swift JNI release method
+        external fun release()
+    }
+
     @SwiftCallbackFunc
     fun callbackWithoutArgs(){
 
@@ -17,6 +25,11 @@ class SwiftReferenceWithCallback private constructor() {
 
     @SwiftCallbackFunc
     fun callbackWithArg(arg: String){
+
+    }
+
+    @SwiftCallbackFunc
+    fun callbackWithEncloseArg(arg: SwiftReferenceWithCallback.SwiftReferenceEnclosed){
 
     }
 

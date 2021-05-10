@@ -8,4 +8,5 @@ class SwiftModuleDescriptor {
     String[] importPackages;
     HashMap<String, String> customTypeMappings;
     HashMap<String, String> packageFolderMappings;
+    HashMap<String, String> enclosedJavaClassMappings;
 }

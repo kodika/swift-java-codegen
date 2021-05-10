@@ -21,3 +21,9 @@ public class SwiftReferenceWithCallback: JavaObject {
 
     }
 }
+
+
+
+public class SwiftReferenceEnclosed: JavaObject {
+
+}

@@ -33,3 +33,35 @@ open class Window: JavaObject{
 
     }
 }
+
+
+
+public class WindowEnclosed: JavaObject {
+
+    static public func from(javaObject: jobject) throws -> WindowEnclosed {
+        return WindowEnclosed(javaObject: javaObject)
+    }
+
+    // Create java object with native pointer
+    public func javaObject() throws -> jobject {
+        fatalError("Should not be needed")
+    }
+
+    public func release() {
+        Unmanaged.passUnretained(self).release()
+    }
+
+    public func retain() {
+        _ = Unmanaged.passUnretained(self).retain()
+    }
+
+    public var jniObject: jobject{
+        get{
+            if self.javaObject == nil{
+                self.javaObject = try! javaObject()
+            }
+            return self.javaObject!
+        }
+    }
+    
+}

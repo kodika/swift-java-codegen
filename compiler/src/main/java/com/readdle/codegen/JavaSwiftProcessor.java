@@ -83,6 +83,10 @@ public class JavaSwiftProcessor extends AbstractProcessor {
             }
         }
 
+        if (moduleDescriptor.enclosedJavaClassMappings != null){
+            Utils.enclosedJavaClassMappings = moduleDescriptor.enclosedJavaClassMappings;
+        }
+
         note("JavaSwiftProcessor init finished successfully");
     }
 

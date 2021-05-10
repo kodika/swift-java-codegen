@@ -1,6 +1,7 @@
 package com.readdle.codegen;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.lang.model.element.Element;
@@ -53,6 +54,7 @@ public class Utils {
         return mangledNameString.replace("/", "_");
     }
 
+    public static HashMap<String, String> enclosedJavaClassMappings;
     public static String javaClassToSig(String javaClass) {
         if (javaClass.equals("boolean")) {
             return "Z";
@@ -83,6 +85,15 @@ public class Utils {
         if (templateStart > 0) {
             javaClass = javaClass.substring(0, templateStart);
         }
+
+        if (javaClass.startsWith("androidpackage.")){
+            javaClass = javaClass.replace("androidpackage.","");
+        }
+
+        if (enclosedJavaClassMappings.containsKey(javaClass)){
+            javaClass = enclosedJavaClassMappings.get(javaClass);
+        }
+
         // Replace all dots with / in package name
         return "L" + javaClass.replace(".", "/") + ";";
     }

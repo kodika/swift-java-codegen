@@ -33,6 +33,10 @@ android {
                    },
                    "customTypeMappings": {
                            "com.readdle.swiftjava.sample.CustomSampleValue": "SampleValue"
+                   },
+                   "enclosedJavaClassMappings":{
+                           "io.kodika.android.TestPackage.SwiftReferenceWithCallback.SwiftReferenceEnclosed": "io.kodika.android.TestPackage.SwiftReferenceWithCallback\$SwiftReferenceEnclosed",
+                           "android.view.Window.WindowEnclosed":"android.view.Window\$WindowEnclosed"
                    }
                }
                """
