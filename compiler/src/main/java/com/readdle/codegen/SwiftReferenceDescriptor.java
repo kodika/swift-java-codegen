@@ -2,6 +2,7 @@ package com.readdle.codegen;
 
 import com.readdle.codegen.anotation.SwiftCallbackFunc;
 import com.readdle.codegen.anotation.SwiftGetter;
+import com.readdle.codegen.anotation.SwiftProperty;
 import com.readdle.codegen.anotation.SwiftReference;
 import com.readdle.codegen.anotation.SwiftSetter;
 
@@ -36,6 +37,7 @@ class SwiftReferenceDescriptor {
 
     List<JavaSwiftProcessor.WritableElement> functions = new LinkedList<>();
     List<SwiftCallbackFuncDescriptor> callbackFunctions = new LinkedList<>();
+    List<SwiftFieldDescriptor> properties = new LinkedList<>();
 
     SwiftReferenceDescriptor(TypeElement classElement, Filer filer, JavaSwiftProcessor processor) throws IllegalArgumentException {
         this.importPackages = processor.moduleDescriptor.importPackages;
@@ -148,6 +150,12 @@ class SwiftReferenceDescriptor {
                         callbackFunctions.add(new SwiftCallbackFuncDescriptor(executableElement, processor));
                     }
                 }
+            }else if (element.getKind() == ElementKind.FIELD){
+                VariableElement variableElement = (VariableElement) element;
+                SwiftProperty property = variableElement.getAnnotation(SwiftProperty.class);
+                if (property != null){
+                    properties.add(new SwiftFieldDescriptor(variableElement,processor));
+                }
             }
         }
     }
@@ -199,7 +207,7 @@ class SwiftReferenceDescriptor {
             swiftWriter.emitStatement("_ = Unmanaged.passUnretained(self).retain()");
             swiftWriter.emitStatement("}");
 
-            if (!callbackFunctions.isEmpty()){
+            if ((!callbackFunctions.isEmpty()) || (!properties.isEmpty())){
                 swiftWriter.emitEmptyLine();
                 swiftWriter.emitStatement("public var jniObject: jobject{");
                 swiftWriter.emitStatement("get{");
@@ -217,6 +225,10 @@ class SwiftReferenceDescriptor {
             function.generateCode(swiftWriter, javaFullName, simpleTypeName);
         }
         swiftWriter.emitEmptyLine();
+
+        for (JavaSwiftProcessor.WritableElement property : properties) {
+            property.generateCode(swiftWriter, javaFullName, simpleTypeName);
+        }
 
         swiftWriter.endExtension();
 

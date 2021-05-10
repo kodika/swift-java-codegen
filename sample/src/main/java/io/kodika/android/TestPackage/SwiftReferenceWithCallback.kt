@@ -1,7 +1,6 @@
 package io.kodika.android.TestPackage
 
-import com.readdle.codegen.anotation.SwiftReference
-import com.readdle.codegen.anotation.SwiftCallbackFunc
+import com.readdle.codegen.anotation.*
 
 @SwiftReference
 class SwiftReferenceWithCallback private constructor() {
@@ -22,4 +21,20 @@ class SwiftReferenceWithCallback private constructor() {
     }
 
     private external fun returnString( result: String)
+
+
+    @SwiftProperty
+    var intProperty: Int = 0
+
+    @SwiftProperty
+    val floatConstantFloatProperty: Float = 0.0F
+
+    companion object {
+
+        @SwiftProperty
+        var staticStringProperty: String = ""
+
+        @SwiftProperty
+        val staticConstantRefProperty: SwiftReferenceWithCallback? = null
+    }
 }

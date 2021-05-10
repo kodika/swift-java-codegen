@@ -139,6 +139,80 @@ class SwiftEnvironment {
             }
         }
 
+        String getFieldValue(boolean isStatic) {
+            String type;
+            switch (swiftType) {
+                case "Bool":
+                    type = "Boolean";
+                    break;
+                case "Int":
+                case "Int32":
+                case "UInt":
+                case "UInt32":
+                    type = "Int";
+                    break;
+                case "Int8":
+                case "UInt8":
+                    type = "Byte";
+                    break;
+                case "Int16":
+                case "UInt16":
+                    type = "Short";
+                    break;
+                case "Int64":
+                case "UInt64":
+                    type = "Long";
+                    break;
+                case "Float":
+                    type = "Float";
+                    break;
+                case "Double":
+                    type = "Double";
+                    break;
+                default:
+                    type = "Object";
+                    break;
+            }
+            return String.format("Get%s%sField", (isStatic ? "Static":""), type);
+        }
+
+        String setFieldValue(boolean isStatic) {
+            String type;
+            switch (swiftType) {
+                case "Bool":
+                    type = "Boolean";
+                    break;
+                case "Int":
+                case "Int32":
+                case "UInt":
+                case "UInt32":
+                    type = "Int";
+                    break;
+                case "Int8":
+                case "UInt8":
+                    type = "Byte";
+                    break;
+                case "Int16":
+                case "UInt16":
+                    type = "Short";
+                    break;
+                case "Int64":
+                case "UInt64":
+                    type = "Long";
+                    break;
+                case "Float":
+                    type = "Float";
+                    break;
+                case "Double":
+                    type = "Double";
+                    break;
+                default:
+                    type = "Object";
+                    break;
+            }
+            return String.format("Set%s%sField", (isStatic ? "Static":""), type);
+        }
+
         Type makeUnsigned() {
             switch (swiftType) {
                 case "Int":
