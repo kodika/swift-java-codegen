@@ -117,16 +117,18 @@ class SwiftReferenceDescriptor {
             }
         }
 
-        if (!hasNativePointer) {
-            throw new IllegalArgumentException(String.format("%s doesn't contain nativePointer field", simpleTypeName));
-        }
+        if (!isAndroidPackage) {
+            if (!hasNativePointer) {
+                throw new IllegalArgumentException(String.format("%s doesn't contain nativePointer field", simpleTypeName));
+            }
 
-        if (!hasEmptyConstructor) {
-            throw new IllegalArgumentException(String.format("%s doesn't contain private empty constructor", simpleTypeName));
-        }
+            if (!hasEmptyConstructor) {
+                throw new IllegalArgumentException(String.format("%s doesn't contain private empty constructor", simpleTypeName));
+            }
 
-        if (releaseExecutableElement == null) {
-            throw new IllegalArgumentException(String.format("%s doesn't contain release method", simpleTypeName));
+            if (releaseExecutableElement == null) {
+                throw new IllegalArgumentException(String.format("%s doesn't contain release method", simpleTypeName));
+            }
         }
 
         for (Element element : classElement.getEnclosedElements()) {
