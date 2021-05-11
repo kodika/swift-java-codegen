@@ -69,7 +69,7 @@ class SwiftReferenceDescriptor {
             String packageFolder = processor.getPackageFolderForElement(enclosingElement);
             File folder = new File(filer.getResource(StandardLocation.SOURCE_OUTPUT,  FOLDER, packageFolder + simpleTypeName + SUFFIX).toUri().getPath()).getParentFile();
             if (!folder.exists()){
-                folder.mkdir();
+                folder.mkdirs();
             }
 
             swiftFilePath = filer.createResource(StandardLocation.SOURCE_OUTPUT, FOLDER, packageFolder + simpleTypeName + SUFFIX, classElement).toUri().getPath();

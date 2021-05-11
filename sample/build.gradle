@@ -29,7 +29,7 @@ android {
                    "moduleName": "SampleProject",
                    "importPackages": ["SampleAppCore"],
                    "packageFolderMappings":{
-                            "io.kodika.android.TestPackage": "TestPackageKodika"
+                            "io.kodika.android.TestPackage": "TestPackageKodika/Subfolder"
                    },
                    "customTypeMappings": {
                            "com.readdle.swiftjava.sample.CustomSampleValue": "SampleValue"
