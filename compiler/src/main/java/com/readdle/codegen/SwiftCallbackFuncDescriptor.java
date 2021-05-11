@@ -14,6 +14,7 @@ import javax.lang.model.element.VariableElement;
 public class SwiftCallbackFuncDescriptor {
 
     private String javaMethodName;
+    private String staticVarMethodName;
     private String swiftMethodName;
 
     private boolean isStatic;
@@ -31,6 +32,7 @@ public class SwiftCallbackFuncDescriptor {
         String elementName = executableElement.getSimpleName().toString();
         this.javaMethodName = elementName;
         this.swiftMethodName = elementName;
+        this.staticVarMethodName = elementName;
 
         this.isStatic = executableElement.getModifiers().contains(Modifier.STATIC);
         this.isThrown = executableElement.getThrownTypes() != null && executableElement.getThrownTypes().size() > 0;
@@ -89,15 +91,20 @@ public class SwiftCallbackFuncDescriptor {
                 paramNames.add("_");
             }
         }
+
+        if (swiftFunc != null && !swiftFunc.staticMethodName().isEmpty()){
+            this.staticVarMethodName = swiftFunc.staticMethodName();
+        }
     }
 
     void generateCode(SwiftWriter swiftWriter, String javaFullName, String swiftType) throws IOException {
         swiftWriter.emitEmptyLine();
-        swiftWriter.emitStatement(String.format("static let javaMethod%1$s = try! JNI.%4$s(forClass: \"%2$s\", method: \"%1$s\", sig: \"%3$s\")",
+        swiftWriter.emitStatement(String.format("static let javaMethod%5$s = try! JNI.%4$s(forClass: \"%2$s\", method: \"%1$s\", sig: \"%3$s\")",
                 javaMethodName,
                 javaFullName,
                 sig,
-                isStatic ? "getStaticJavaMethod" : "getJavaMethod"));
+                isStatic ? "getStaticJavaMethod" : "getJavaMethod",
+                staticVarMethodName));
 
         swiftWriter.emitEmptyLine();
         swiftWriter.emit(String.format("public %s func %s(", isStatic ? "static" : "", swiftMethodName));
@@ -199,7 +206,7 @@ public class SwiftCallbackFuncDescriptor {
                 jniMethodTemplate = "JNI.CallStaticVoidMethod(javaClass, %s.javaMethod%s";
             }
         }
-        swiftWriter.emit(String.format(jniMethodTemplate, swiftType, javaMethodName));
+        swiftWriter.emit(String.format(jniMethodTemplate, swiftType, staticVarMethodName));
         for (SwiftParamDescriptor param : params) {
             swiftWriter.emit(String.format(", java%s", param.name));
         }

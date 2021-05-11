@@ -9,5 +9,5 @@ import java.lang.annotation.Target;
 public @interface SwiftCallbackFunc {
 
     String value() default "";
-
+    String staticMethodName() default "";
 }
