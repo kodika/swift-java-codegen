@@ -99,7 +99,7 @@ public class SwiftCallbackFuncDescriptor {
 
     void generateCode(SwiftWriter swiftWriter, String javaFullName, String swiftType) throws IOException {
         swiftWriter.emitEmptyLine();
-        swiftWriter.emitStatement(String.format("static let javaMethod%5$s = try! JNI.%4$s(forClass: \"%2$s\", method: \"%1$s\", sig: \"%3$s\")",
+        swiftWriter.emitStatement(String.format("private static let javaMethod%5$s = try! JNI.%4$s(forClass: \"%2$s\", method: \"%1$s\", sig: \"%3$s\")",
                 javaMethodName,
                 javaFullName,
                 sig,
@@ -107,7 +107,7 @@ public class SwiftCallbackFuncDescriptor {
                 staticVarMethodName));
 
         swiftWriter.emitEmptyLine();
-        swiftWriter.emit(String.format("public %s func %s(", isStatic ? "static" : "", swiftMethodName));
+        swiftWriter.emit(String.format("public%s func %s(", isStatic ? " static" : "", swiftMethodName));
         for (int i = 0; i < params.size(); i++) {
             boolean isFirst = i == 0;
 
