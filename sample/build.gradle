@@ -32,7 +32,8 @@ android {
                             "io.kodika.android.TestPackage": "TestPackageKodika/Subfolder"
                    },
                    "customTypeMappings": {
-                           "com.readdle.swiftjava.sample.CustomSampleValue": "SampleValue"
+                           "com.readdle.swiftjava.sample.CustomSampleValue": "SampleValue",
+                           "android.view.Window.WindowEnclosed": "WindowsEnclosedCustom"
                    },
                    "enclosedJavaClassMappings":{
                            "io.kodika.android.TestPackage.SwiftReferenceWithCallback.SwiftReferenceEnclosed": "io.kodika.android.TestPackage.SwiftReferenceWithCallback\$SwiftReferenceEnclosed",

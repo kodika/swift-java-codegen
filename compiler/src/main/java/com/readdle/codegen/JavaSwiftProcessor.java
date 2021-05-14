@@ -366,7 +366,7 @@ public class JavaSwiftProcessor extends AbstractProcessor {
     }
 
     boolean isNullable(Element element) {
-        note("Check nullability " + element.asType().toString());
+        //note("Check nullability " + element.asType().toString());
         if (element.asType().getKind().isPrimitive()) {
             return false;
         }
@@ -411,6 +411,10 @@ public class JavaSwiftProcessor extends AbstractProcessor {
     public SwiftEnvironment.Type parseJavaType(String javaType) {
         if (moduleDescriptor.customTypeMappings != null && moduleDescriptor.customTypeMappings.containsKey(javaType)) {
             return new SwiftEnvironment.Type(moduleDescriptor.customTypeMappings.get(javaType), javaType);
+        }
+        String cleanJavaType = javaType.replace("androidpackage.","").replace("$",".");
+        if (moduleDescriptor.customTypeMappings != null && moduleDescriptor.customTypeMappings.containsKey(cleanJavaType)) {
+            return new SwiftEnvironment.Type(moduleDescriptor.customTypeMappings.get(cleanJavaType), javaType);
         }
         switch (javaType) {
             case "void":

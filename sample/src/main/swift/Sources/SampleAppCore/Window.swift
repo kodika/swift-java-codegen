@@ -36,10 +36,10 @@ open class Window: JavaObject{
 
 
 
-public class WindowEnclosed: JavaObject {
+public class WindowsEnclosedCustom: JavaObject {
 
-    static public func from(javaObject: jobject) throws -> WindowEnclosed {
-        return WindowEnclosed(javaObject: javaObject)
+    static public func from(javaObject: jobject) throws -> WindowsEnclosedCustom {
+        return WindowsEnclosedCustom(javaObject: javaObject)
     }
 
     // Create java object with native pointer
