@@ -59,6 +59,10 @@ class SwiftReferenceDescriptor {
             isAndroidPackage = true;
         }
 
+        if (processor.moduleDescriptor.customTypeMappings != null && processor.moduleDescriptor.customTypeMappings.containsKey(javaFullName.replace("/","."))){
+            simpleTypeName = processor.moduleDescriptor.customTypeMappings.get(javaFullName.replace("/","."));
+        }
+
         Element enclosingElement = classElement.getEnclosingElement();
         while (enclosingElement != null && enclosingElement.getKind() == ElementKind.CLASS) {
             javaFullName = JavaSwiftProcessor.replaceLast(javaFullName, '/', '$');
