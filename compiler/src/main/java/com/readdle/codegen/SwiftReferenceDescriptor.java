@@ -8,6 +8,8 @@ import com.readdle.codegen.anotation.SwiftSetter;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -34,6 +36,7 @@ class SwiftReferenceDescriptor {
     private String simpleTypeName;
     private String[] importPackages;
     private Boolean isAndroidPackage;
+    private Boolean hasCustomConstructor;
 
     List<JavaSwiftProcessor.WritableElement> functions = new LinkedList<>();
     List<SwiftCallbackFuncDescriptor> callbackFunctions = new LinkedList<>();
@@ -62,6 +65,8 @@ class SwiftReferenceDescriptor {
         if (processor.moduleDescriptor.customTypeMappings != null && processor.moduleDescriptor.customTypeMappings.containsKey(javaFullName.replace("/","."))){
             simpleTypeName = processor.moduleDescriptor.customTypeMappings.get(javaFullName.replace("/","."));
         }
+
+        this.hasCustomConstructor = Arrays.asList(processor.moduleDescriptor.customConstructors).contains(simpleTypeName);
 
         Element enclosingElement = classElement.getEnclosingElement();
         while (enclosingElement != null && enclosingElement.getKind() == ElementKind.CLASS) {
@@ -126,7 +131,7 @@ class SwiftReferenceDescriptor {
                 throw new IllegalArgumentException(String.format("%s doesn't contain nativePointer field", simpleTypeName));
             }
 
-            if (!hasEmptyConstructor) {
+            if (!hasEmptyConstructor && !hasCustomConstructor) {
                 throw new IllegalArgumentException(String.format("%s doesn't contain private empty constructor", simpleTypeName));
             }
 
@@ -194,10 +199,14 @@ class SwiftReferenceDescriptor {
             swiftWriter.emitEmptyLine();
             swiftWriter.emitStatement("// Create java object with native pointer");
             swiftWriter.emitStatement("func javaObject() throws -> jobject {");
-            swiftWriter.emitStatement("let nativePointer = jlong(Int(bitPattern: Unmanaged.passRetained(self).toOpaque()))");
-            swiftWriter.emitStatement("guard let result = JNI.NewObject(javaClass, methodID: javaConstructor) else {\nthrow NSError(domain: \"CantCreateObject\", code: 1)\n}");
-            swiftWriter.emitStatement("JNI.api.SetLongField(JNI.env, result, javaSwiftPointerFiled, nativePointer)");
-            swiftWriter.emitStatement("return result");
+            if (hasCustomConstructor){
+                swiftWriter.emitStatement("return self.javaObject!");
+            }else{
+                swiftWriter.emitStatement("let nativePointer = jlong(Int(bitPattern: Unmanaged.passRetained(self).toOpaque()))");
+                swiftWriter.emitStatement("guard let result = JNI.NewObject(javaClass, methodID: javaConstructor) else {\nthrow NSError(domain: \"CantCreateObject\", code: 1)\n}");
+                swiftWriter.emitStatement("JNI.api.SetLongField(JNI.env, result, javaSwiftPointerFiled, nativePointer)");
+                swiftWriter.emitStatement("return result");
+            }
             swiftWriter.emitStatement("}");
 
 

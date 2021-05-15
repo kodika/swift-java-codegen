@@ -38,7 +38,10 @@ android {
                    "enclosedJavaClassMappings":{
                            "io.kodika.android.TestPackage.SwiftReferenceWithCallback.SwiftReferenceEnclosed": "io.kodika.android.TestPackage.SwiftReferenceWithCallback\$SwiftReferenceEnclosed",
                            "android.view.Window.WindowEnclosed":"android.view.Window\$WindowEnclosed"
-                   }
+                   },
+                   "customConstructors":[
+                        "SwiftReferenceWithCustomConstructor"
+                   ]
                }
                """
                 ]
