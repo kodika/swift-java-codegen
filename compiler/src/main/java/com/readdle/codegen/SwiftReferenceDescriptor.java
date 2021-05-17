@@ -200,7 +200,7 @@ class SwiftReferenceDescriptor {
             swiftWriter.emitStatement("// Create java object with native pointer");
             swiftWriter.emitStatement("func javaObject() throws -> jobject {");
             if (hasCustomConstructor){
-                swiftWriter.emitStatement("return self.javaObject!");
+                swiftWriter.emitStatement("return JNI.api.NewLocalRef( JNI.env, javaObject! )!");
             }else{
                 swiftWriter.emitStatement("let nativePointer = jlong(Int(bitPattern: Unmanaged.passRetained(self).toOpaque()))");
                 swiftWriter.emitStatement("guard let result = JNI.NewObject(javaClass, methodID: javaConstructor) else {\nthrow NSError(domain: \"CantCreateObject\", code: 1)\n}");
