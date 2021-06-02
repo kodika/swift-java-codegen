@@ -80,6 +80,9 @@ public class Utils {
         if (javaClass.equals("double")) {
             return "D";
         }
+        if (javaClass.equals("byte[]")) {
+            return "[B";
+        }
         // First, remove all templates
         int templateStart = javaClass.indexOf("<");
         if (templateStart > 0) {
@@ -133,7 +136,11 @@ public class Utils {
 
             @Override
             public Void visitArray(ArrayType arrayType, Void v) {
-                throw new UnsupportedOperationException("Array not supported");
+                if (arrayType.toString().equals("byte[]")){
+                    result.append("[UInt8]");
+                    return null;
+                }
+                throw new UnsupportedOperationException("Array not supported" + arrayType.toString());
             }
 
             @Override

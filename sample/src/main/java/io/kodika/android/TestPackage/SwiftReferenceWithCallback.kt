@@ -33,6 +33,11 @@ class SwiftReferenceWithCallback private constructor() {
 
     }
 
+    @SwiftCallbackFunc
+    fun funcWithByteArray(b: ByteArray): ByteArray {
+        TODO()
+    }
+
     private external fun returnString( result: String)
 
 

@@ -421,6 +421,8 @@ public class JavaSwiftProcessor extends AbstractProcessor {
                 return null;
             case "byte":
                 return new SwiftEnvironment.Type("Int8", javaType);
+            case "byte[]":
+                return new SwiftEnvironment.Type("[UInt8]", javaType);
             case "short":
                 return new SwiftEnvironment.Type("Int16", javaType);
             case "int":
