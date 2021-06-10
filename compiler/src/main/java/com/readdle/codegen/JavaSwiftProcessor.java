@@ -475,6 +475,9 @@ public class JavaSwiftProcessor extends AbstractProcessor {
                         return new SwiftEnvironment.Type("[" + keyType.swiftType + ":" + valueType.swiftType + "]", javaType);
                     }
                     else {
+                        //Remove generics
+                        javaType = javaType.replaceAll("<.*>","");
+
                         // Try found enclosing typename
                         String[] parts = javaType.split(Pattern.quote("$"));
                         if (parts.length == 1) {
