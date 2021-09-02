@@ -40,7 +40,7 @@ class SwiftFieldDescriptor implements JavaSwiftProcessor.WritableElement{
         swiftWriter.emitStatement(String.format("let fieldJavaValue = JNI.api.%s(JNI.env,%s,%s.javaField%s)",fieldSwiftType.getFieldValue(isStatic),(isStatic ? "javaClass" : "jniObject"),swiftType,fieldName));
 
         swiftWriter.emitStatement("defer {");
-        swiftWriter.emitStatement("if let localRef = fieldJavaValue as? jobject {");
+        swiftWriter.emitStatement("if let localRef = fieldJavaValue {");
         swiftWriter.emitStatement("JNI.DeleteLocalRef(localRef)");
         swiftWriter.emitStatement("}");
         swiftWriter.emitStatement("}");
@@ -61,7 +61,7 @@ class SwiftFieldDescriptor implements JavaSwiftProcessor.WritableElement{
             }
 
             swiftWriter.emitStatement("defer {");
-            swiftWriter.emitStatement("if let localRef = javaNewValue as? jobject {");
+            swiftWriter.emitStatement("if let localRef = javaNewValue {");
             swiftWriter.emitStatement("JNI.DeleteLocalRef(localRef)");
             swiftWriter.emitStatement("}");
             swiftWriter.emitStatement("}");
