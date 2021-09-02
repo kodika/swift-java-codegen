@@ -39,10 +39,12 @@ class SwiftFieldDescriptor implements JavaSwiftProcessor.WritableElement{
 
         swiftWriter.emitStatement(String.format("let fieldJavaValue = JNI.api.%s(JNI.env,%s,%s.javaField%s)",fieldSwiftType.getFieldValue(isStatic),(isStatic ? "javaClass" : "jniObject"),swiftType,fieldName));
 
-        swiftWriter.emitStatement("defer {");
-        //TODO optional
-        swiftWriter.emitStatement("JNI.DeleteLocalRef(fieldJavaValue)");
-        swiftWriter.emitStatement("}");
+        if (!fieldSwiftType.isPrimitiveType()) {
+            swiftWriter.emitStatement("defer {");
+            //TODO optional
+            swiftWriter.emitStatement("JNI.DeleteLocalRef(fieldJavaValue)");
+            swiftWriter.emitStatement("}");
+        }
 
         if (fieldSwiftType.isPrimitiveType()) {
             swiftWriter.emitStatement(String.format("return %s(fromJavaPrimitive: fieldJavaValue)",fieldSwiftType.swiftType));
@@ -59,11 +61,12 @@ class SwiftFieldDescriptor implements JavaSwiftProcessor.WritableElement{
                 swiftWriter.emitStatement(String.format("let javaNewValue = try! newValue.javaObject()"));
             }
 
-            swiftWriter.emitStatement("defer {");
-            //TODO optional
-            swiftWriter.emitStatement("JNI.DeleteLocalRef(javaNewValue)");
-            swiftWriter.emitStatement("}");
-
+            if (!fieldSwiftType.isPrimitiveType()) {
+                swiftWriter.emitStatement("defer {");
+                //TODO optional
+                swiftWriter.emitStatement("JNI.DeleteLocalRef(javaNewValue)");
+                swiftWriter.emitStatement("}");
+            }
 
             swiftWriter.emitStatement(String.format("JNI.api.%s(JNI.env,%s,%s.javaField%s, javaNewValue)",fieldSwiftType.setFieldValue(isStatic),(isStatic ? "javaClass" : "jniObject"),swiftType,fieldName));
             swiftWriter.emitStatement("}");
