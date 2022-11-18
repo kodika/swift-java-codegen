@@ -53,11 +53,8 @@ class SwiftValueDescriptor {
             javaFullName = classElement.getQualifiedName().toString().replace(".", "/");
         }
 
-        try {
-            swiftFilePath = filer.createResource(StandardLocation.SOURCE_OUTPUT, FOLDER, simpleTypeName + SUFFIX, classElement).toUri().getPath();
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new IllegalArgumentException("Can't create swift file");
+        if (processor.moduleDescriptor.customTypeMappings != null && processor.moduleDescriptor.customTypeMappings.containsKey(javaFullName.replace("/","."))){
+            simpleTypeName = processor.moduleDescriptor.customTypeMappings.get(javaFullName.replace("/","."));
         }
 
         Element enclosingElement = classElement.getEnclosingElement();
@@ -65,6 +62,19 @@ class SwiftValueDescriptor {
             javaFullName = JavaSwiftProcessor.replaceLast(javaFullName, '/', '$');
             javaPackage = javaFullName.substring(0, javaFullName.lastIndexOf("."));
             enclosingElement = enclosingElement.getEnclosingElement();
+        }
+
+        try {
+            String packageFolder = processor.getPackageFolderForElement(enclosingElement);
+            File folder = new File(filer.getResource(StandardLocation.SOURCE_OUTPUT,  FOLDER, packageFolder + simpleTypeName + SUFFIX).toUri().getPath()).getParentFile();
+            if (!folder.exists()){
+                folder.mkdir();
+            }
+
+            swiftFilePath = filer.createResource(StandardLocation.SOURCE_OUTPUT, FOLDER, packageFolder + simpleTypeName + SUFFIX, classElement).toUri().getPath();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException("Can't create swift file" + e.getLocalizedMessage());
         }
 
 
