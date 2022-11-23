@@ -59,20 +59,31 @@ class SwiftBlockDescriptor {
             javaFullName = classElement.getQualifiedName().toString().replace(".", "/");
         }
 
-        swiftType = "SwiftBlock" + simpleTypeName;
-
-        try {
-            swiftFilePath = filer.createResource(StandardLocation.SOURCE_OUTPUT, FOLDER, swiftType + SUFFIX, classElement).toUri().getPath();
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw new IllegalArgumentException("Can't create swift file");
-        }
-
         Element enclosingElement = classElement.getEnclosingElement();
         while (enclosingElement != null && enclosingElement.getKind() == ElementKind.CLASS) {
             javaFullName = JavaSwiftProcessor.replaceLast(javaFullName, '/', '$');
             enclosingElement = enclosingElement.getEnclosingElement();
         }
+
+        if (processor.moduleDescriptor.customTypeMappings != null && processor.moduleDescriptor.customTypeMappings.containsKey(javaFullName.replace("/","."))){
+            simpleTypeName = processor.moduleDescriptor.customTypeMappings.get(javaFullName.replace("/","."));
+        }
+
+        swiftType = "SwiftBlock" + simpleTypeName;
+
+        try {
+            String packageFolder = processor.getPackageFolderForElement(enclosingElement);
+            File folder = new File(filer.getResource(StandardLocation.SOURCE_OUTPUT,  FOLDER, packageFolder + simpleTypeName + SUFFIX).toUri().getPath()).getParentFile();
+            if (!folder.exists()){
+                folder.mkdir();
+            }
+
+            swiftFilePath = filer.createResource(StandardLocation.SOURCE_OUTPUT, FOLDER, packageFolder + simpleTypeName + SUFFIX, classElement).toUri().getPath();
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new IllegalArgumentException("Can't create swift file" + e.getLocalizedMessage());
+        }
+
 
         for (Element element : classElement.getEnclosedElements()) {
             if (element.getKind() == ElementKind.METHOD) {
