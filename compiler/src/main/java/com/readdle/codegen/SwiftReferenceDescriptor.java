@@ -1,6 +1,7 @@
 package com.readdle.codegen;
 
 import com.readdle.codegen.anotation.SwiftCallbackFunc;
+import com.readdle.codegen.anotation.SwiftFunc;
 import com.readdle.codegen.anotation.SwiftGetter;
 import com.readdle.codegen.anotation.SwiftProperty;
 import com.readdle.codegen.anotation.SwiftReference;
@@ -146,13 +147,14 @@ class SwiftReferenceDescriptor {
                 if (executableElement.getModifiers().contains(Modifier.NATIVE)) {
                     SwiftGetter getterAnnotation = executableElement.getAnnotation(SwiftGetter.class);
                     SwiftSetter setterAnnotation = executableElement.getAnnotation(SwiftSetter.class);
+                    SwiftFunc funcAnnotation = executableElement.getAnnotation(SwiftFunc.class);
 
                     if (getterAnnotation != null) {
                         functions.add(new SwiftGetterDescriptor(executableElement, getterAnnotation, processor));
                     }
                     else if (setterAnnotation != null) {
                         functions.add(new SwiftSetterDescriptor(executableElement, setterAnnotation, processor));
-                    } else {
+                    } else if(funcAnnotation == null || (funcAnnotation != null && !funcAnnotation.value().equals("NO"))) {
                         functions.add(new SwiftFuncDescriptor(executableElement, processor));
                     }
                 }else{
